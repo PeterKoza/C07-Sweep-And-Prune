@@ -1,6 +1,7 @@
 from tkinter import *
 from rectangle import *
 
+
 class MainCanvas():
     def __init__(self, canvas, w, h):
         self.canvas = canvas
@@ -8,6 +9,7 @@ class MainCanvas():
         self.height = h
         self.canvas.bind("<Button-1>", self.onClick)
         self.canvas.configure(cursor = "tcross")
+        self.isPlaying = False
         self.mode = "ADD"
         self.rectangles = []
         self.actualRectangle = None
@@ -49,6 +51,9 @@ class MainCanvas():
         self.canvas.unbind('<B1-Motion>')
         self.canvas.unbind('<ButtonRelease-1>')
         self.actualRectangle.setXYinOrder()
+        if self.isPlaying:
+            self.actualRectangle.startMoving()
+            self.actualRectangle.moveWithEuler()
         self.actualRectangle = None
 
     # REMOVE RECTANGLE
@@ -87,6 +92,20 @@ class MainCanvas():
             if self.rectangles[i].isClicked(e):
                 clicked.append(i)
         return clicked
+
+    #-----------------------------------------------------
+    def play(self):
+        if self.isPlaying:
+            return
+        self.isPlaying = True
+        for rec in self.rectangles:
+            rec.startMoving()
+            rec.moveWithEuler()
+
+    def stop(self):
+        self.isPlaying = False
+        for rec in self.rectangles:
+            rec.stopMoving()
         
         
     

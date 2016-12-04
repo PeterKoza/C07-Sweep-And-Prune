@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+
 from main_canvas import MainCanvas
 
 class Application(Frame):
@@ -35,11 +36,11 @@ class Application(Frame):
         # PLAY BUTTON
         playButton = Button(self.upperFrame, text="Play", style="C.TButton")
         playButton.place(x=w/10*7, y=h/12, anchor="c")
-        #playButton.configure(command = self.play)
+        playButton.configure(command = self.play)
         # STOP BUTTON
         stopButton = Button(self.upperFrame, text="Stop", style="C.TButton")
         stopButton.place(x=w/10*9, y=h/12, anchor="c")
-        #stopButton.configure(command = self.stop)
+        stopButton.configure(command = self.stop)
 
 
     def createCenterFrame(self, w, h):
@@ -47,6 +48,7 @@ class Application(Frame):
         canvas.pack()
         self.mainCanvas = MainCanvas(canvas, w, h/3*2)
 
+ 
     def createLowerFrame(self, w, h):
         h = h / 100
         w = w / 6
@@ -66,8 +68,15 @@ class Application(Frame):
         self.SAP_CollisionsLabel = Label(lowerRightFrame, text="Collisions: ", font=f).pack(padx=w, pady=h)
         self.SAP_TimeLabel = Label(lowerRightFrame, text="Time: ", font=f).pack(padx=w, pady=h)
 
+   
     def setMode(self, mode):
         self.mainCanvas.setMode(mode)
+
+    def play(self):
+        self.mainCanvas.play()
+
+    def stop(self):
+        self.mainCanvas.stop()
 
 app = Application()
 #app.mainloop()

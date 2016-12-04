@@ -1,4 +1,6 @@
-class Rectangle:
+import random
+
+class Rectangle():
     def __init__(self, x1, y1, x2, y2, color='red'):
         self.x1 = x1
         self.y1 = y1
@@ -6,6 +8,8 @@ class Rectangle:
         self.y2 = y2
         self.color = color
         self.id = None
+        self.velocity = 1 #random.randrange(1, 10) / 10
+        self.isRunning = False
 
     def draw(self, g):
         self.g = g
@@ -49,5 +53,16 @@ class Rectangle:
 
     def isClicked(self, e):
         return self.x1 <= e.x <= self.x2  and  self.y1 <= e.y <= self.y2
+
+    def moveWithEuler(self):
+        self.move(1*self.velocity, -1*self.velocity)
+        if self.isRunning:
+            self.g.after(50, self.moveWithEuler)
+
+    def startMoving(self):
+        self.isRunning = True
+
+    def stopMoving(self):
+        self.isRunning = False
 
 
