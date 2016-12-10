@@ -52,7 +52,7 @@ class MainCanvas():
         self.canvas.unbind('<ButtonRelease-1>')
         self.actualRectangle.setXYinOrder()
         if self.isPlaying:
-            self.actualRectangle.startMoving()
+            self.actualRectangle.startMoving(self.width,self.height)
             self.actualRectangle.moveWithEuler()
         self.actualRectangle = None
 
@@ -99,7 +99,7 @@ class MainCanvas():
             return
         self.isPlaying = True
         for rec in self.rectangles:
-            rec.startMoving()
+            rec.startMoving(self.width, self.height)
             rec.moveWithEuler()
 
     def stop(self):

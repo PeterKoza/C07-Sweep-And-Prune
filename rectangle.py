@@ -6,9 +6,11 @@ class Rectangle():
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
+        self.dtx = random.randrange(-100, 100) /10
+        self.dty = random.randrange(-100, 100) /10
         self.color = color
         self.id = None
-        self.velocity = 1 #random.randrange(1, 10) / 10
+        self.velocity = random.randrange(-100, 100) /100
         self.isRunning = False
 
     def draw(self, g):
@@ -28,6 +30,12 @@ class Rectangle():
         return isXout or isYout 
         
     def move(self, dx=0, dy=0):
+        if self.x1 + dx < 0 or self.x2 > self.w:
+            self.dtx *= -1
+            dx *= -1
+        if self.y1 + dy < 0 or self.y2 > self.h:
+            self.dty *= -1
+            dy *= -1
         self.x1 += dx
         self.y1 += dy
         self.x2 += dx
@@ -55,11 +63,13 @@ class Rectangle():
         return self.x1 <= e.x <= self.x2  and  self.y1 <= e.y <= self.y2
 
     def moveWithEuler(self):
-        self.move(1*self.velocity, -1*self.velocity)
+        self.move(self.dtx*self.velocity, self.dty*self.velocity)
         if self.isRunning:
             self.g.after(50, self.moveWithEuler)
 
-    def startMoving(self):
+    def startMoving(self, w, h):
+        self.w = w
+        self.h = h
         self.isRunning = True
 
     def stopMoving(self):
