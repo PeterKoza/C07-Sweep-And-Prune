@@ -1,3 +1,5 @@
+import random
+
 from tkinter import *
 from rectangle import *
 
@@ -8,10 +10,9 @@ class MainCanvas():
         self.width = w
         self.height = h
         self.canvas.bind("<Button-1>", self.onClick)
-        self.canvas.configure(cursor = "tcross")
         self.isPlaying = False
-        self.mode = "ADD"
-        self.rectangles = []
+        self.mode = None
+        self.rectangles = self.createRandomRectangles(20)
         self.actualRectangle = None
         self.clicked = None
         self.ex = None
@@ -25,6 +26,8 @@ class MainCanvas():
             self.canvas.configure(cursor = "target")
         elif(mode == "UPDATE"):
             self.canvas.configure(cursor = "fleur")
+        else:
+            self.canvas.configure(cursor = "")
 
     def onClick(self, e):
         if(self.mode == "ADD"):
@@ -41,7 +44,7 @@ class MainCanvas():
     # CREAT NEW RECTANGLE
     def createNewRectangle(self, event):
         self.actualRectangle = Rectangle(event.x, event.y, event.x+3, event.y+3)
-        self.actualRectangle.draw(self.canvas)
+        self.actualRectangle.draw(self.canvas, self.width, self.height)
         self.rectangles.append(self.actualRectangle)
 
     def setSizesOfRectangle(self, e):
@@ -52,7 +55,7 @@ class MainCanvas():
         self.canvas.unbind('<ButtonRelease-1>')
         self.actualRectangle.setXYinOrder()
         if self.isPlaying:
-            self.actualRectangle.startMoving(self.width,self.height)
+            self.actualRectangle.startMoving()
             self.actualRectangle.moveWithEuler()
         self.actualRectangle = None
 
@@ -65,26 +68,37 @@ class MainCanvas():
         self.rectangles = [rec for rec in self.rectangles if rec != None]
 
     # UPDATE RECTANGLE
-    def updateRectangle(self, e):
+    def updateRectangle(self, e): 
         self.clicked = self.getClickedRectangles(e)
         self.ex, self.ey = e.x, e.y
             
     def moveRectagles(self, e):
-        for i in range(len(self.clicked)):
-            self.rectangles[self.clicked[i]].move(e.x-self.ex, e.y-self.ey)
-            if self.rectangles[self.clicked[i]].isOut(self.width, self.height):
-                self.rectangles[self.clicked[i]].delete()
-                self.rectangles[self.clicked[i]] = None
-                self.clicked[i] = None
-        self.clicked = [clicked for clicked in self.clicked if clicked != None]
+        for i in self.clicked:
+            self.rectangles[i].move(e.x-self.ex, e.y-self.ey, True)
         self.ex, self.ey = e.x, e.y
 
     def unbindMovingRectagles(self, e):
         self.canvas.unbind('<B1-Motion>')
         self.canvas.unbind('<ButtonRelease-1>')
-        self.rectangles = [rec for rec in self.rectangles if rec != None]
         self.clicked = None
-        
+
+    #----------------------------------------------------
+    def createRandomRectangles(self, n):
+        rectangles = []
+        maxWidth = 50
+        maxHeight = 50
+        for i in range(n):
+            centerX = random.randrange(maxWidth, self.width - maxWidth)
+            centerY = random.randrange(maxHeight, self.height - maxHeight)
+            x1 = random.randrange(centerX - maxWidth, centerX)
+            x2 = random.randrange(centerX, centerX + maxWidth)
+            y1 = random.randrange(centerY - maxHeight, centerY)
+            y2 = random.randrange(centerY, centerY + maxHeight)
+            rec = Rectangle(x1, y1, x2, y2)
+            rec.draw(self.canvas, self.width, self.height)
+            rectangles.append(rec)
+        return rectangles
+
     #-----------------------------------------------------
     def getClickedRectangles(self, e):
         clicked = []
@@ -98,8 +112,9 @@ class MainCanvas():
         if self.isPlaying:
             return
         self.isPlaying = True
+        self.removeRecanglesOutOfCanvas()
         for rec in self.rectangles:
-            rec.startMoving(self.width, self.height)
+            rec.startMoving()
             rec.moveWithEuler()
 
     def stop(self):
@@ -107,7 +122,15 @@ class MainCanvas():
         for rec in self.rectangles:
             rec.stopMoving()
         
-        
+    #---------------------------------------------------
+    def removeRecanglesOutOfCanvas(self):
+        rectangles = []
+        for rec in self.rectangles:
+            if rec.isOut():
+                rec.delete()
+            else:
+                rectangles.append(rec)
+        self.rectangles = rectangles
     
         
 
