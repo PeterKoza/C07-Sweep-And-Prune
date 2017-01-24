@@ -1,6 +1,6 @@
 ## Topic
 
-This project demonstare two algorithms which measures collisions between boxes.
+This project demonstrates two algorithms which measures collisions between boxes.
 Algorithms: Broad phase collision detection, Sweep and Prume
 
 
