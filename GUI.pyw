@@ -7,11 +7,22 @@ from broad_phase_collision_detection import BPCD
 from sweep_and_prume import SAP
 
 
+
 class Application(Frame):
+    """
+    Class defines design of the GUI application
+
+    atributes:
+        self.root: tkinter object
+        self.BPCDthread: Thread which contains Broad Phase Collision Detection algorithm
+        self.SAPthread: Thread which contains sweep and prume algorithm
+        self.mainCanvas: MainCanvas object
+    """
     def __init__(self):
         w = 750
         h = 550
         self.root = Tk()
+        self.mainCanvas = None
         self.createUpperFrame(w, h)
         separator = Frame(self.root, height=2, relief=SUNKEN).pack(fill=X, padx=5, pady=5)
         self.createCenterFrame(w, h)
@@ -24,7 +35,15 @@ class Application(Frame):
         self.SAPthread.start()
         self.updateLabels()
 
+
     def createUpperFrame(self, w, h):
+        """
+        This method defines buttons on top and binding functions on them.
+
+        Args:
+            w: (int) editor width
+            h: (int) editor height
+        """
         style = Style()
         style.configure("BW.TLabel", foreground="black", background="#f8f8f8")
         style = Style().configure("C.TButton", font=('Arial Black', 12))
@@ -52,6 +71,12 @@ class Application(Frame):
 
 
     def createCenterFrame(self, w, h):
+        """This method defines canvas in middle of editor
+
+        Args:
+            w: (int) editor width
+            h: (int) editor height
+        """
         integerHeight = int(h/3*2)
         canvas = Canvas(self.root, bg='white', width=w, height=integerHeight)
         canvas.pack()
@@ -59,6 +84,13 @@ class Application(Frame):
 
  
     def createLowerFrame(self, w, h):
+        """
+        This method draw lower frame of editor. Exactly labels for algorithms data
+
+        Args:
+            w: (int) editor width
+            h: (int) editor height
+        """
         h = h / 100
         w = w / 6
         px = 100
@@ -82,11 +114,19 @@ class Application(Frame):
         self.SAP_CollisionsLabel.pack(padx=0, pady=h)
         self.SAP_TimeLabel = Label(lowerRightFrame, text="Time: ", font=f)
         self.SAP_TimeLabel.pack(padx=0, pady=h)
-   
+
+           
     def setMode(self, mode):
+        """
+        This method set mode what application offer (add, remove, update)
+
+        Args:
+            mode: (string) the name
+        """
         self.mainCanvas.setMode(mode)
 
     def play(self):
+        """This method starts moving rectangles and algorithms"""
         self.addButton.config(state = DISABLED)
         self.removeButton.config(state = DISABLED)
         self.updateButton.config(state = DISABLED)
@@ -94,28 +134,38 @@ class Application(Frame):
         self.mainCanvas.play()
         self.BPCDthread.startCounting(self.mainCanvas.rectangles)
         self.SAPthread.startCounting(self.mainCanvas.rectangles)
+
     
     def stop(self):
+        """This method stops moving rectangles and algorithms."""
         self.addButton.config(state = NORMAL)
         self.removeButton.config(state = NORMAL)
         self.updateButton.config(state = NORMAL)
         self.mainCanvas.stop()
         self.BPCDthread.stopCounting()
         self.SAPthread.stopCounting()
+        
 
     def updateLabels(self):
+        """
+        This method update labels and informations about algorithms.
+        It asks of informations from threads in wich algorithms run. 
+        """
+        # broad phase collision labels
         boxes, collisions, time = self.BPCDthread.collisionInfo()
         self.BPCD_BoxesLabel['text'] = "Boxes: " + str(boxes)
         self.BPCD_CollisionsLabel['text'] = "Collisions: " + str(collisions)
         self.BPCD_TimeLabel['text'] = "Time: " + str(round(time, 5))
+        # sweep and prume labels
         boxes, collisions, time = self.SAPthread.collisionInfo()
         self.SAP_BoxesLabel['text'] = "Boxes: " + str(boxes)
         self.SAP_CollisionsLabel['text'] = "Collisions: " + str(collisions)
         self.SAP_TimeLabel['text'] = "Time: " + str(round(time, 5))
-        self.root.after(500, self.updateLabels)
+        self.root.after(300, self.updateLabels)
+        
 
 app = Application()
-#app.mainloop()
+app.root.mainloop()
 
 
 
